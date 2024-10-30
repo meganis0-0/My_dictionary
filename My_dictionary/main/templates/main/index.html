@@ -1,0 +1,27 @@
+{% extends 'main/layout.html' %}
+{% load static %}
+
+{% block title %} My Dictionary {% endblock title %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 style="margin-left: 37%">My Dictionary</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <p>Это веб-приложение реализует работу словаря. Оно хранит в базе данных слово и его перевод. На странице со списком всех слов есть
+                возможность поиска по слову и его переводу. При нажатии на кнопку "Добавить" открывается страница добавления нового слова и его перевода.
+                При нажатии на кнопку "Удалить" слово удаляется из базы данных. 
+            </p>
+        </div>
+    </div>
+
+    <img src="{% static 'main/img/image.png' %}" alt="dictionary" style="margin-left: 25%; max-height: 70vh;">
+{% endblock %}
+
+<!-- PATH:My_dictionary/main/templates/main/index.html -->

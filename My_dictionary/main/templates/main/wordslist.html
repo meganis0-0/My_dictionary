@@ -1,0 +1,115 @@
+{% extends 'main/layout.html' %}
+
+{% block title %} Words List {% endblock title %}
+
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 style="margin-left: 37%">Список слов</h1>
+            <form method="GET" class="form-inline mb-3">
+                <input type="text" name="search" value="{{ search_query }}" class="form-control" placeholder="Поиск по словам">
+                
+                <div class="form-group mx-2">
+                    <label for="sortAsc" class="mr-2">Сортировать:</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="sort" id="sortAsc" value="asc" {% if sort_order == 'asc' %}checked{% endif %}>
+                        <label class="form-check-label" for="sortAsc">Z -> A</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="sort" id="sortDesc" value="desc" {% if sort_order == 'desc' %}checked{% endif %}>
+                        <label class="form-check-label" for="sortDesc">A -> Z</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin: 30px; margin-left: 200px;">Применить</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% if words %}
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Слово</th>
+                <th scope="col">Значение</th>
+                <th scope="col">Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for word in words %}
+                <tr>   
+                    <td>{{ word.word }}</td>
+                    <td>{{ word.meaning }}</td>
+                    <td>
+                        <a href="{% url 'editword' word.id %}">Изменить</a> |
+                        <button class="text-danger" data-id="{{ word.id }}" data-word="{{ word.word }}" onclick="openDialog(this)">Удалить</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>Список слов пуст</p>
+{% endif %}
+
+<a href="{% url 'addnewword' %}"><button class="btn btn-primary">Добавить слово</button></a>
+
+<!-- Диалог для подтверждения удаления -->
+<dialog id="deleteDialog" aria-labelledby="deleteDialogTitle" aria-describedby="deleteDialogDesc">
+    <h2 id="deleteDialogTitle">Подтверждение удаления</h2>
+    <p id="deleteDialogDesc">Вы уверены, что хотите удалить слово "<span id="wordToDelete"></span>"?</p>
+    <form method="post" id="deleteForm">
+        {% csrf_token %}
+        <input type="hidden" name="word_id" id="wordId">
+        <button type="button" onclick="closeDialog()" class="btn btn-secondary">Отмена</button>
+        <button type="submit" class="btn btn-danger">Удалить</button>
+    </form>
+</dialog>
+
+<script>
+// Функция для открытия диалога
+function openDialog(button) {
+    const wordId = button.getAttribute('data-id');
+    const wordName = button.getAttribute('data-word');
+    
+    document.getElementById('wordToDelete').textContent = wordName;
+    document.getElementById('wordId').value = wordId;
+    
+    const dialog = document.getElementById('deleteDialog');
+    dialog.showModal();
+}
+
+// Функция для закрытия диалога
+function closeDialog() {
+    const dialog = document.getElementById('deleteDialog');
+    dialog.close();
+}
+
+// Обработка отправки формы удаления
+document.getElementById('deleteForm').onsubmit = function(event) {
+    event.preventDefault(); // Предотвращаем стандартное поведение формы
+    const wordId = document.getElementById('wordId').value;
+
+    fetch(`/delete_word/${wordId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({}),
+    })
+    .then(response => {
+        if (response.ok) {
+            location.reload(); // Перезагружаем страницу после успешного удаления
+        } else {
+            alert("Ошибка при удалении слова.");
+        }
+    });
+};
+</script>
+
+{% endblock content %}
+<!-- PATH:My_dictionary/main/templates/main/wordslist.html -->

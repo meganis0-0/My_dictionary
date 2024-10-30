@@ -1,0 +1,26 @@
+{% extends 'main/layout.html' %}
+
+{% block title %} Add new word {% endblock title %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 style="margin-left: 31%">Добавить новое слово</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <form method="POST">
+                    {% csrf_token %}
+                    {{form.word}}
+                    {{form.meaning}}
+                    <span>{{ error }}</span>
+                    <button type="submit" class="btn btn-primary" style="margin: 30px; margin-left: 200px;">Добавить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+<!-- PATH:My_dictionary/main/templates/main/addnewword.html -->
