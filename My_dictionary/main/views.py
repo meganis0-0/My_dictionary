@@ -11,21 +11,22 @@ def addnewword(request, id=None):
     error = ''
     if id:
         word = get_object_or_404(Word, id=id)
-        form = WordForm(request.POST or None, instance=word)  # Инициализация формы с существующим словом
+        form = WordForm(request.POST or None, instance=word)
     else:
-        form = WordForm(request.POST or None)  # Новая форма для добавления слова
+        form = WordForm(request.POST or None)
 
     if request.method == 'POST':
         if form.is_valid():
             form.save()
             return redirect('wordslist')
         else:
-            error = 'Ошибка'
+            # Здесь мы не используем error, так как ошибки уже в форме
+            error = 'Ошибка при добавлении слова. Проверьте введенные данные.'
 
     data = {
         'form': form,
         'error': error,
-        'word': word if id else None  # Передаем слово только если редактируем
+        'word': word if id else None
     }
     
     return render(request, 'main/addnewword.html', data)
